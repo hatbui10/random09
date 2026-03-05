@@ -7,78 +7,83 @@
 <style>
 
 body{
-    background:#0b0f1a;
-    display:flex;
-    justify-content:center;
-    align-items:flex-start;
-    height:100vh;
-    font-family:Arial;
-    margin: 40px auto;
+background:#0b0f1a;
+display:flex;
+justify-content:center;
+align-items:flex-start;
+margin: 50px auto;
+height:100vh;
+font-family:Arial;
 }
 
 .container{
-    background:#111827;
-    padding:30px;
-    border-radius:20px;
-    box-shadow:0 0 20px #00ffff55;
-    text-align:center;
+background:#111827;
+padding:30px;
+border-radius:20px;
+box-shadow:0 0 25px #00ffff55;
+text-align:center;
+color:white;
+}
+
+.counter{
+margin-bottom:15px;
+font-size:18px;
 }
 
 .grid{
-    display:grid;
-    grid-template-columns:repeat(4,80px);
-    gap:15px;
-    justify-content:center;
-    margin-top:20px;
+display:grid;
+grid-template-columns:repeat(4,80px);
+gap:15px;
+justify-content:center;
+margin-top:20px;
 }
 
 .box{
-    width:80px;
+width:80px;
 }
 
 .index{
-    color:#9ca3af;
-    font-size:14px;
-    margin-bottom:5px;
+color:#9ca3af;
+font-size:14px;
+margin-bottom:5px;
 }
 
 .value{
-    height:60px;
-    background:#1f2937;
-    border-radius:10px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:28px;
-    font-weight:bold;
-    color:#00ffff;
-    box-shadow:0 0 10px #00ffff66 inset;
-    transition:0.2s;
+height:60px;
+background:#1f2937;
+border-radius:10px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:28px;
+font-weight:bold;
+color:#00ffff;
+box-shadow:0 0 10px #00ffff66 inset;
 }
 
 .value.flash{
-    animation:flash 0.6s infinite;
+animation:flash 0.6s infinite;
 }
 
 @keyframes flash{
-    0%{box-shadow:0 0 10px #00ffff;}
-    50%{box-shadow:0 0 25px #00ffff;}
-    100%{box-shadow:0 0 10px #00ffff;}
+0%{box-shadow:0 0 10px #00ffff;}
+50%{box-shadow:0 0 30px #00ffff;}
+100%{box-shadow:0 0 10px #00ffff;}
 }
 
 button{
-    padding:10px 25px;
-    font-size:16px;
-    border:none;
-    border-radius:10px;
-    background:#06b6d4;
-    color:white;
-    cursor:pointer;
-    box-shadow:0 0 10px #06b6d4;
+padding:10px 25px;
+font-size:16px;
+border:none;
+border-radius:10px;
+background:#06b6d4;
+color:white;
+cursor:pointer;
+box-shadow:0 0 10px #06b6d4;
 }
 
 button:hover{
-    box-shadow:0 0 20px #06b6d4;
+box-shadow:0 0 20px #06b6d4;
 }
 
 </style>
@@ -88,7 +93,11 @@ button:hover{
 
 <div class="container">
 
-<button onclick="startRandom()">Random</button>
+<div class="counter">
+🔢 Random: <span id="count">0</span>
+</div>
+
+<button onclick="startSpin()">Random</button>
 
 <div class="grid" id="grid"></div>
 
@@ -96,55 +105,61 @@ button:hover{
 
 <script>
 
-const grid = document.getElementById("grid");
+const grid=document.getElementById("grid");
 
 for(let i=0;i<10;i++){
-    grid.innerHTML += `
-    <div class="box">
-        <div class="index">${i}</div>
-        <div class="value" id="v${i}">-</div>
-    </div>`;
+grid.innerHTML+=`
+<div class="box">
+<div class="index">${i}</div>
+<div class="value" id="v${i}">-</div>
+</div>`;
 }
 
-let timer;
-let speed = 50;
+let speed=50;
+let count=0;
 
 function shuffle(arr){
-    for(let i=arr.length-1;i>0;i--){
-        let j = Math.floor(Math.random()*(i+1));
-        [arr[i],arr[j]]=[arr[j],arr[i]];
-    }
+for(let i=arr.length-1;i>0;i--){
+let j=Math.floor(Math.random()*(i+1));
+[arr[i],arr[j]]=[arr[j],arr[i]];
+}
 }
 
 function spin(){
 
-    let arr=[0,1,2,3,4,5,6,7,8,9];
-    shuffle(arr);
+let arr=[0,1,2,3,4,5,6,7,8,9];
+shuffle(arr);
 
-    for(let i=0;i<10;i++){
-        document.getElementById("v"+i).innerText = arr[i];
-    }
-
-    speed += 20;
-
-    if(speed < 400){
-        timer=setTimeout(spin,speed);
-    }
-    else{
-        for(let i=0;i<10;i++){
-            document.getElementById("v"+i).classList.add("flash");
-        }
-    }
+for(let i=0;i<10;i++){
+document.getElementById("v"+i).innerText=arr[i];
 }
 
-function startRandom(){
+speed+=20;
 
-    for(let i=0;i<10;i++){
-        document.getElementById("v"+i).classList.remove("flash");
-    }
+if(speed<400){
+setTimeout(spin,speed);
+}else{
 
-    speed = 50;
-    spin();
+for(let i=0;i<10;i++){
+document.getElementById("v"+i).classList.add("flash");
+}
+
+count++;
+document.getElementById("count").innerText=count;
+
+}
+
+}
+
+function startSpin(){
+
+for(let i=0;i<10;i++){
+document.getElementById("v"+i).classList.remove("flash");
+}
+
+speed=50;
+spin();
+
 }
 
 </script>
