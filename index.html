@@ -11,7 +11,7 @@ background:#0b0f1a;
 display:flex;
 justify-content:center;
 align-items:flex-start;
-margin: 50px auto;
+margin:50px auto;
 height:100vh;
 font-family:Arial;
 }
@@ -86,6 +86,19 @@ button:hover{
 box-shadow:0 0 20px #06b6d4;
 }
 
+/* lịch sử */
+
+.history{
+margin-top:25px;
+max-height:200px;
+overflow:auto;
+background:#020617;
+padding:10px;
+border-radius:10px;
+text-align:left;
+font-size:14px;
+}
+
 </style>
 </head>
 
@@ -98,14 +111,21 @@ box-shadow:0 0 20px #06b6d4;
 </div>
 
 <button onclick="startSpin()">Random</button>
+<button onclick="exportTXT()">Export TXT</button>
+<button onclick="clearHistory()">Clear</button>
 
 <div class="grid" id="grid"></div>
+
+<div class="history" id="history">
+<b>📜 Lịch sử:</b><br>
+</div>
 
 </div>
 
 <script>
 
 const grid=document.getElementById("grid");
+const historyBox=document.getElementById("history");
 
 for(let i=0;i<10;i++){
 grid.innerHTML+=`
@@ -117,6 +137,12 @@ grid.innerHTML+=`
 
 let speed=50;
 let count=0;
+
+/* load lịch sử từ local */
+
+let history=JSON.parse(localStorage.getItem("randomHistory"))||[];
+
+renderHistory();
 
 function shuffle(arr){
 for(let i=arr.length-1;i>0;i--){
@@ -147,6 +173,17 @@ document.getElementById("v"+i).classList.add("flash");
 count++;
 document.getElementById("count").innerText=count;
 
+/* lưu lịch sử */
+
+let record=arr.join(" ");
+history.push(record);
+
+/* lưu vào local */
+
+localStorage.setItem("randomHistory",JSON.stringify(history));
+
+renderHistory();
+
 }
 
 }
@@ -162,6 +199,44 @@ spin();
 
 }
 
+function renderHistory(){
+
+historyBox.innerHTML="<b>📜 Lịch sử:</b><br>";
+
+history.slice().reverse().forEach((h,i)=>{
+historyBox.innerHTML+=`#${history.length-i} → ${h}<br>`;
+});
+
+}
+
+/* xuất file txt */
+
+function exportTXT(){
+
+let text="Lich su random\n\n";
+
+history.forEach((h,i)=>{
+text+=`#${i+1} : ${h}\n`;
+});
+
+let blob=new Blob([text],{type:"text/plain"});
+
+let a=document.createElement("a");
+a.href=URL.createObjectURL(blob);
+a.download="random_history.txt";
+a.click();
+
+}
+
+/* xoá lịch sử */
+
+function clearHistory(){
+
+history=[];
+localStorage.removeItem("randomHistory");
+renderHistory();
+
+}
 </script>
 
 </body>
