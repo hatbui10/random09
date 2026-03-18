@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -22,7 +23,7 @@ body {
   align-items: flex-start;
   background: #0f172a;
   color: #fff;
-  margin:40px;
+  margin: 40px;
 }
 
 .container {
@@ -78,10 +79,10 @@ select {
 <h3 id="title"></h3>
 
 <select id="lengthSelect">
-  <option value="4">4 ô</option>
-  <option value="5" selected>5 ô</option>
-  <option value="6">6 ô</option>
-  <option value="9">9 ô</option>
+  <option value="4">4 ô</option>
+  <option value="5" selected>5 ô</option>
+  <option value="6">6 ô</option>
+  <option value="9">9 ô</option>
 </select>
 
 <div class="boxes" id="boxes"></div>
@@ -109,101 +110,101 @@ let data = [];
 
 /* tạo box */
 function createBoxes() {
-  boxesContainer.innerHTML = "";
-  for (let i = 0; i < LENGTH; i++) {
-    let div = document.createElement("div");
-    div.className = "box";
-    boxesContainer.appendChild(div);
-  }
+  boxesContainer.innerHTML = "";
+  for (let i = 0; i < LENGTH; i++) {
+    let div = document.createElement("div");
+    div.className = "box";
+    boxesContainer.appendChild(div);
+  }
 }
 
 /* title */
 function updateTitle() {
-  title.textContent = "Nhập " + LENGTH + " chữ số";
+  title.textContent = "Nhập " + LENGTH + " chữ số";
 }
 
 /* đổi LENGTH */
 select.addEventListener("change", () => {
-  LENGTH = parseInt(select.value);
-  data = [];
-  createBoxes();
-  updateTitle();
-  result.textContent = "";
+  LENGTH = parseInt(select.value);
+  data = [];
+  createBoxes();
+  updateTitle();
+  result.textContent = "";
 
-  rebuildSets(); // 🔥 quan trọng
+  rebuildSets(); // 🔥 quan trọng
 });
 
 /* 🔥 fetch dữ liệu từ IPFS */
 let CONST_1 = [], CONST_2 = [];
 
 async function loadIPFSData() {
-  try {
-    const IPFS_URL = "https://tomato-delicate-zebra-533.mypinata.cloud/ipfs/bafkreiczhy55pfniniy7i3nl5s5cd7l22cusgrkdxstyp34zejr6nbzzrq";
+  try {
+    const IPFS_URL = "https://tomato-delicate-zebra-533.mypinata.cloud/ipfs/bafkreiclp3z5nhhxevzvvdszr5iucmzonwg4qalc4qab6ija6awvpnzdvi";
 
-    const res = await fetch(IPFS_URL);
-    const json = await res.json();
+    const res = await fetch(IPFS_URL);
+    const json = await res.json();
 
-    CONST_1 = json.CONST_1 || [];
-    CONST_2 = json.CONST_2 || [];
+    CONST_1 = json.CONST_1 || [];
+    CONST_2 = json.CONST_2 || [];
 
-    rebuildSets();
-    createBoxes();
-    updateTitle();
+    rebuildSets();
+    createBoxes();
+    updateTitle();
 
-  } catch (err) {
-    console.error("Lỗi khi load IPFS:", err);
-    result.textContent = "❌ Không thể load dữ liệu";
-  }
+  } catch (err) {
+    console.error("Lỗi khi load IPFS:", err);
+    result.textContent = "❌ Không thể load dữ liệu";
+  }
 }
 
 /* 🔥 rebuild sets theo LENGTH */
 function rebuildSets() {
-  set1 = new Set(CONST_1.filter(x => x.length === LENGTH));
-  set2 = new Set(CONST_2.filter(x => x.length === LENGTH));
+  set1 = new Set(CONST_1.filter(x => x.length === LENGTH));
+  set2 = new Set(CONST_2.filter(x => x.length === LENGTH));
 }
 
 /* focus */
 window.onload = () => {
-  input.focus();
-  loadIPFSData();
+  input.focus();
+  loadIPFSData();
 };
 
 /* nhập */
 input.addEventListener("input", (e) => {
-  let value = e.target.value.replace(/[^0-9]/g, "");
-  if (!value) return;
+  let value = e.target.value.replace(/[^0-9]/g, "");
+  if (!value) return;
 
-  for (let char of value) {
-    if (data.length >= LENGTH) data.shift();
-    data.push(char);
-  }
+  for (let char of value) {
+    if (data.length >= LENGTH) data.shift();
+    data.push(char);
+  }
 
-  e.target.value = "";
-  updateDisplay();
+  e.target.value = "";
+  updateDisplay();
 });
 
 /* 🔥 xử lý chính */
 function updateDisplay() {
-  let boxes = document.querySelectorAll(".box");
+  let boxes = document.querySelectorAll(".box");
 
-  boxes.forEach((box, i) => {
-    box.textContent = data[i] || "";
-  });
+  boxes.forEach((box, i) => {
+    box.textContent = data[i] || "";
+  });
 
-  if (data.length === LENGTH) {
-    let str = data.join("");
+  if (data.length === LENGTH) {
+    let str = data.join("");
 
-    if (set1.has(str)) {
-      result.textContent = "👉 1";
-    } else if (set2.has(str)) {
-      result.textContent = "👉 0";
-    } else {
-      result.textContent = "❌ Không thấy";
-    }
+    if (set1.has(str)) {
+      result.textContent = "👉 1";
+    } else if (set2.has(str)) {
+      result.textContent = "👉 0";
+    } else {
+      result.textContent = "❌ Không thấy";
+    }
 
-  } else {
-    result.textContent = "";
-  }
+  } else {
+    result.textContent = "";
+  }
 }
 </script>
 
