@@ -2,299 +2,126 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Random Grid</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Input 7 số</title>
 
 <style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin-top: 60px;
+  }
 
-body{
-background:#0b0f1a;
-display:flex;
-justify-content:center;
-align-items:flex-start;
-margin:50px auto;
-height:100vh;
-font-family:Arial;
-}
+  .boxes {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
 
-.container{
-background:#111827;
-padding:30px;
-border-radius:20px;
-box-shadow:0 0 25px #00ffff55;
-text-align:center;
-color:white;
-}
+  .box {
+    width: 45px;
+    height: 55px;
+    border: 2px solid #333;
+    font-size: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-.counter{
-margin-bottom:15px;
-font-size:18px;
-}
+  input {
+    font-size: 18px;
+    padding: 10px;
+    text-align: center;
+  }
 
-.grid{
-display:grid;
-grid-template-columns:repeat(4,80px);
-gap:15px;
-justify-content:center;
-margin-top:20px;
-}
-
-.box{
-width:80px;
-}
-
-.index{
-color:#9ca3af;
-font-size:14px;
-margin-bottom:5px;
-}
-
-.value{
-height:60px;
-background:#1f2937;
-border-radius:10px;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:28px;
-font-weight:bold;
-color:#00ffff;
-box-shadow:0 0 10px #00ffff66 inset;
-}
-
-.value.flash{
-animation:flash 0.6s infinite;
-}
-
-@keyframes flash{
-0%{box-shadow:0 0 10px #00ffff;}
-50%{box-shadow:0 0 30px #00ffff;}
-100%{box-shadow:0 0 10px #00ffff;}
-}
-
-button{
-padding:10px 20px;
-margin:5px;
-font-size:16px;
-border:none;
-border-radius:10px;
-background:#06b6d4;
-color:white;
-cursor:pointer;
-box-shadow:0 0 10px #06b6d4;
-}
-
-button:hover{
-box-shadow:0 0 20px #06b6d4;
-}
-
-.history{
-margin-top:25px;
-max-height:220px;
-overflow:auto;
-background:#020617;
-padding:10px;
-border-radius:10px;
-text-align:left;
-font-size:14px;
-}
-
-.marked{
-color:#22c55e;
-font-weight:bold;
-}
-
+  #result {
+    margin-top: 15px;
+    font-weight: bold;
+  }
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<h3>Nhập 7 chữ số</h3>
 
-<div class="counter">
-🔢 Random: <span id="count">0</span>
+<div class="boxes">
+  <div class="box"></div>
+  <div class="box"></div>
+  <div class="box"></div>
+  <div class="box"></div>
+  <div class="box"></div>
+  <div class="box"></div>
+  <div class="box"></div>
 </div>
 
-<button onclick="startSpin()">Random</button>
-<button onclick="exportTXT()">Export TXT</button>
-<button onclick="clearHistory()">Clear</button>
+<!-- Ô nhập thật -->
+<input 
+  type="tel" 
+  id="hiddenInput" 
+  inputmode="numeric" 
+  pattern="[0-9]*" 
+  placeholder="Nhập số..." 
+  autocomplete="off"
+/>
 
-<div class="grid" id="grid"></div>
-
-<div class="history" id="history"></div>
-
-</div>
+<p id="result"></p>
 
 <script>
+  const CONST_A = "1234567";
+  const CONST_B = "7654321";
 
-const grid=document.getElementById("grid");
-const historyBox=document.getElementById("history");
+  const input = document.getElementById("hiddenInput");
+  const boxes = document.querySelectorAll(".box");
+  const result = document.getElementById("result");
 
-for(let i=0;i<10;i++){
-grid.innerHTML+=`
-<div class="box">
-<div class="index">${i}</div>
-<div class="value" id="v${i}">-</div>
-</div>`;
-}
+  let data = [];
 
-let speed=50;
-let count=0;
+  // Auto focus khi load
+  window.addEventListener("load", () => {
+    input.focus();
+  });
 
-/* load history */
+  // Luôn giữ focus (click đâu cũng quay lại)
+  document.addEventListener("click", () => {
+    input.focus();
+  });
 
-let history=JSON.parse(localStorage.getItem("randomHistory"))||[];
+  input.addEventListener("input", (e) => {
+    let value = e.target.value.replace(/[^0-9]/g, "");
 
-/* chuyển dữ liệu cũ nếu là string */
+    if (!value) return;
 
-history=history.map(h=>{
-if(typeof h==="string"){
-return {data:h,marked:false};
-}
-return h;
-});
+    for (let char of value) {
+      if (data.length >= 7) data.shift(); // dịch trái
+      data.push(char);
+    }
 
-renderHistory();
+    e.target.value = "";
 
-/* shuffle */
+    updateDisplay();
+  });
 
-function shuffle(arr){
-for(let i=arr.length-1;i>0;i--){
-let j=Math.floor(Math.random()*(i+1));
-[arr[i],arr[j]]=[arr[j],arr[i]];
-}
-}
+  function updateDisplay() {
+    boxes.forEach((box, i) => {
+      box.textContent = data[i] || "";
+    });
 
-function spin(){
+    if (data.length === 7) {
+      let inputStr = data.join("");
 
-let arr=[0,1,2,3,4,5,6,7,8,9];
-shuffle(arr);
-
-for(let i=0;i<10;i++){
-document.getElementById("v"+i).innerText=arr[i];
-}
-
-speed+=20;
-
-if(speed<400){
-setTimeout(spin,speed);
-}else{
-
-for(let i=0;i<10;i++){
-document.getElementById("v"+i).classList.add("flash");
-}
-
-count++;
-document.getElementById("count").innerText=count;
-
-/* lưu history */
-
-let record={
-data:arr.join(" "),
-marked:false
-};
-
-history.push(record);
-
-localStorage.setItem(
-"randomHistory",
-JSON.stringify(history)
-);
-
-renderHistory();
-
-}
-
-}
-
-function startSpin(){
-
-for(let i=0;i<10;i++){
-document.getElementById("v"+i).classList.remove("flash");
-}
-
-speed=50;
-spin();
-
-}
-
-/* render history */
-
-function renderHistory(){
-
-historyBox.innerHTML="<b>📜 Lịch sử:</b><br>";
-
-history.slice().reverse().forEach((h,i)=>{
-
-let index=history.length-i-1;
-
-historyBox.innerHTML+=`
-<div style="display:flex;align-items:center;gap:8px;margin:3px 0;">
-<input type="checkbox"
-${h.marked?"checked":""}
-onchange="toggleMark(${index})">
-
-<span class="${h.marked?"marked":""}">
-#${index+1} → ${h.data}
-</span>
-</div>
-`;
-
-});
-
-}
-
-/* đánh dấu */
-
-function toggleMark(i){
-
-history[i].marked=!history[i].marked;
-
-localStorage.setItem(
-"randomHistory",
-JSON.stringify(history)
-);
-
-renderHistory();
-
-}
-
-/* export txt */
-
-function exportTXT(){
-
-let text="Lich su random\n\n";
-
-history.forEach((h,i)=>{
-
-let mark=h.marked?"[✓] ":"";
-
-text+=`${mark}#${i+1} : ${h.data}\n`;
-
-});
-
-let blob=new Blob([text],{type:"text/plain"});
-
-let a=document.createElement("a");
-a.href=URL.createObjectURL(blob);
-a.download="random_history.txt";
-a.click();
-
-}
-
-/* clear */
-
-function clearHistory(){
-
-if(!confirm("Xóa toàn bộ lịch sử?")) return;
-
-history=[];
-
-localStorage.removeItem("randomHistory");
-
-renderHistory();
-
-}
-
+      if (inputStr === CONST_A) {
+        result.textContent = "Khớp CONST_A";
+      } else if (inputStr === CONST_B) {
+        result.textContent = "Khớp CONST_B";
+      } else {
+        result.textContent = "Không khớp";
+      }
+    } else {
+      result.textContent = "";
+    }
+  }
 </script>
 
 </body>
