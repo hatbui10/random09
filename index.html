@@ -8,64 +8,64 @@
 
 <style>
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-  font-family: sans-serif;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  background: #0f172a;
-  color: #fff;
-  margin: 40px;
+  font-family: sans-serif;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background: #0f172a;
+  color: #fff;
+  margin: 40px;
 }
 
 .container {
-  text-align: center;
+  text-align: center;
 }
 
 .boxes {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  margin: 20px 0;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 20px 0;
 }
 
 .box {
-  width: 45px;
-  height: 50px;
-  border-radius: 10px;
-  font-size: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #1e293b;
+  width: 45px;
+  height: 50px;
+  border-radius: 10px;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1e293b;
 }
 
 input {
-  width: 120px;
-  padding: 10px;
-  font-size: 18px;
-  text-align: center;
-  border-radius: 8px;
-  border: none;
-  outline: none;
+  width: 120px;
+  padding: 10px;
+  font-size: 18px;
+  text-align: center;
+  border-radius: 8px;
+  border: none;
+  outline: none;
 }
 
 select {
-  padding: 6px 10px;
-  margin-bottom: 10px;
-  border-radius: 6px;
+  padding: 6px 10px;
+  margin-bottom: 10px;
+  border-radius: 6px;
 }
 
 #result {
-  margin-top: 15px;
-  font-size: 20px;
-  font-weight: bold;
+  margin-top: 15px;
+  font-size: 20px;
+  font-weight: bold;
 }
 </style>
 </head>
@@ -77,10 +77,10 @@ select {
 <h3 id="title"></h3>
 
 <select id="lengthSelect">
+  <option value="4">4 ô</option>
+  <option value="3" selected>3 ô</option>
   <option value="5">5 ô</option>
-  <option value="4" selected>4 ô</option>
   <option value="6">6 ô</option>
-  <option value="3">3 ô</option>
 </select>
 
 <div class="boxes" id="boxes"></div>
@@ -92,7 +92,7 @@ select {
 </div>
 
 <script>
-let LENGTH = 5;
+let LENGTH = 3;
 
 /* ⚡ set động */
 let set1 = new Set();
@@ -137,8 +137,8 @@ let CONST_1 = [], CONST_2 = [];
 
 async function loadIPFSData() {
   try {
-    const IPFS_URL = "https://tomato-delicate-zebra-533.mypinata.cloud/ipfs/bafkreih2ssy5qtq372ggqpcbbffoqkjytpnds55iakcadvmckhfum73feu";
-
+    const IPFS_URL = "https://tomato-delicate-zebra-533.mypinata.cloud/ipfs/bafkreiatkhdy3x3mfnq34qc7mprkunrv23ixv4sreju7ou4rud6jofz7ue";
+    
     const res = await fetch(IPFS_URL);
     const json = await res.json();
 
