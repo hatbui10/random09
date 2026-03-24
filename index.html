@@ -1,208 +1,134 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Check số linh hoạt</title>
-
+<title>Công cụ Nhân bản Nội dung</title>
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #0f172a;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  .container {
+    width: 95%;
+    max-width: 500px;
+    background: #1e293b;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  }
+  h2 { text-align: center; color: #6366f1; margin-bottom: 20px; }
+  
+  label { font-size: 0.9em; color: #94a3b8; margin-bottom: 5px; display: block; }
+  
+  input, textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    border: 1px solid #334155;
+    background: #0f172a;
+    color: #fff;
+    box-sizing: border-box;
+    font-size: 16px;
+  }
 
-body {
-  font-family: sans-serif;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  background: #0f172a;
-  color: #fff;
-  margin: 40px;
-}
+  .controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
 
-.container {
-  text-align: center;
-}
+  button {
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  .btn-run { background: #6366f1; color: white; }
+  .btn-copy { background: #10b981; color: white; }
+  button:hover { opacity: 0.8; transform: translateY(-2px); }
 
-.boxes {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  margin: 20px 0;
-}
-
-.box {
-  width: 45px;
-  height: 50px;
-  border-radius: 10px;
-  font-size: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #1e293b;
-}
-
-input {
-  width: 120px;
-  padding: 10px;
-  font-size: 18px;
-  text-align: center;
-  border-radius: 8px;
-  border: none;
-  outline: none;
-}
-
-select {
-  padding: 6px 10px;
-  margin-bottom: 10px;
-  border-radius: 6px;
-}
-
-#result {
-  margin-top: 15px;
-  font-size: 20px;
-  font-weight: bold;
-}
+  textarea {
+    height: 200px;
+    font-family: monospace;
+    resize: none;
+  }
+  
+  .status {
+    text-align: center;
+    font-size: 0.85em;
+    color: #38bdf8;
+  }
 </style>
 </head>
-
 <body>
 
 <div class="container">
+  <h2>👯 Nhân bản nội dung</h2>
 
-<h3 id="title"></h3>
+  <label>Nội dung muốn lặp:</label>
+  <input type="text" id="sourceText" placeholder="Nhập chữ hoặc số cần nhân bản...">
 
-<select id="lengthSelect">
-  <option value="4">4 ô</option>
-  <option value="3" selected>3 ô</option>
-  <option value="5">5 ô</option>
-  <option value="6">6 ô</option>
-</select>
+  <label>Số lượng cần tạo:</label>
+  <input type="number" id="repeatCount" placeholder="Ví dụ: 100" min="1">
 
-<div class="boxes" id="boxes"></div>
+  <div class="controls">
+    <button class="btn-run" onclick="generate()">⚡ Thực thi</button>
+    <button class="btn-copy" onclick="copyToClipboard()">📋 Copy kết quả</button>
+  </div>
 
-<input type="tel" id="hiddenInput" inputmode="numeric" placeholder="..." />
-
-<p id="result"></p>
-
+  <label>Kết quả:</label>
+  <textarea id="resultArea" readonly placeholder="Kết quả sẽ xuất hiện ở đây..."></textarea>
+  
+  <div id="msg" class="status"></div>
 </div>
 
 <script>
-let LENGTH = 3;
+function generate() {
+  const text = document.getElementById('sourceText').value;
+  const count = parseInt(document.getElementById('repeatCount').value);
+  const resultArea = document.getElementById('resultArea');
+  const msg = document.getElementById('msg');
 
-/* ⚡ set động */
-let set1 = new Set();
-let set2 = new Set();
+  if (!text) {
+    alert("Bạn chưa nhập nội dung cần lặp!");
+    return;
+  }
+  if (isNaN(count) || count <= 0) {
+    alert("Vui lòng nhập số lượng hợp lệ!");
+    return;
+  }
 
-const input = document.getElementById("hiddenInput");
-const result = document.getElementById("result");
-const boxesContainer = document.getElementById("boxes");
-const title = document.getElementById("title");
-const select = document.getElementById("lengthSelect");
-
-let data = [];
-
-/* tạo box */
-function createBoxes() {
-  boxesContainer.innerHTML = "";
-  for (let i = 0; i < LENGTH; i++) {
-    let div = document.createElement("div");
-    div.className = "box";
-    boxesContainer.appendChild(div);
-  }
+  // Tạo mảng và nối lại bằng dấu xuống dòng (hoặc để trống nếu muốn dính liền)
+  const result = new Array(count).fill(text).join('\n');
+  
+  resultArea.value = result;
+  msg.innerText = `Đã tạo xong ${count} bản sao!`;
 }
 
-/* title */
-function updateTitle() {
-  title.textContent = "Nhập " + LENGTH + " chữ số";
-}
+function copyToClipboard() {
+  const resultArea = document.getElementById('resultArea');
+  if (!resultArea.value) {
+    alert("Chưa có gì để copy cả!");
+    return;
+  }
 
-/* đổi LENGTH */
-select.addEventListener("change", () => {
-  LENGTH = parseInt(select.value);
-  data = [];
-  createBoxes();
-  updateTitle();
-  result.textContent = "";
-
-  rebuildSets(); // 🔥 quan trọng
-});
-
-/* 🔥 fetch dữ liệu từ IPFS */
-let CONST_1 = [], CONST_2 = [];
-
-async function loadIPFSData() {
-  try {
-    const IPFS_URL = "https://tomato-delicate-zebra-533.mypinata.cloud/ipfs/bafkreiatkhdy3x3mfnq34qc7mprkunrv23ixv4sreju7ou4rud6jofz7ue";
-    
-    const res = await fetch(IPFS_URL);
-    const json = await res.json();
-
-    CONST_1 = json.CONST_1 || [];
-    CONST_2 = json.CONST_2 || [];
-
-    rebuildSets();
-    createBoxes();
-    updateTitle();
-
-  } catch (err) {
-    console.error("Lỗi khi load IPFS:", err);
-    result.textContent = "❌ Không thể load dữ liệu";
-  }
-}
-
-/* 🔥 rebuild sets theo LENGTH */
-function rebuildSets() {
-  set1 = new Set(CONST_1.filter(x => x.length === LENGTH));
-  set2 = new Set(CONST_2.filter(x => x.length === LENGTH));
-}
-
-/* focus */
-window.onload = () => {
-  input.focus();
-  loadIPFSData();
-};
-
-/* nhập */
-input.addEventListener("input", (e) => {
-  let value = e.target.value.replace(/[^0-9]/g, "");
-  if (!value) return;
-
-  for (let char of value) {
-    if (data.length >= LENGTH) data.shift();
-    data.push(char);
-  }
-
-  e.target.value = "";
-  updateDisplay();
-});
-
-/* 🔥 xử lý chính */
-function updateDisplay() {
-  let boxes = document.querySelectorAll(".box");
-
-  boxes.forEach((box, i) => {
-    box.textContent = data[i] || "";
-  });
-
-  if (data.length === LENGTH) {
-    let str = data.join("");
-
-    if (set1.has(str)) {
-      result.textContent = "👉 1";
-    } else if (set2.has(str)) {
-      result.textContent = "👉 0";
-    } else {
-      result.textContent = "❌ Không thấy";
-    }
-
-  } else {
-    result.textContent = "";
-  }
+  resultArea.select();
+  document.execCommand('copy');
+  
+  const msg = document.getElementById('msg');
+  msg.innerText = "✅ Đã copy vào bộ nhớ tạm!";
+  setTimeout(() => msg.innerText = "", 2000);
 }
 </script>
 
